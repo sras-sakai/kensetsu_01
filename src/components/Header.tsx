@@ -13,7 +13,6 @@ export function Header() {
           <Link to="/" className="flex items-center">
             <div className="text-blue-900">
               <div className="font-bold text-xl">{officeInfo.name}</div>
-              <div className="text-xs text-gray-600">行政書士事務所</div>
             </div>
           </Link>
           <div className="flex items-center gap-3">

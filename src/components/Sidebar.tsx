@@ -8,13 +8,13 @@ export function Sidebar() {
       <div className="bg-blue-900 text-white rounded-lg p-6">
         <h3 className="text-xl mb-4 text-center">お気軽にご相談ください</h3>
         <div className="space-y-4">
-          <a href="tel:0120-000-0000" className="block bg-green-500 hover:bg-green-600 text-white text-center py-4 rounded transition-colors">
+          <a href="tel:025-378-2033" className="block bg-green-500 hover:bg-green-600 text-white text-center py-4 rounded transition-colors">
             <Phone className="w-6 h-6 inline-block mr-2" />
-            <span className="text-xl">0120-000-0000</span>
+            <span className="text-xl">025-378-2033</span>
           </a>
           <div className="text-center text-sm">
             <Clock className="w-4 h-4 inline-block mr-1" />
-            受付時間：平日 9:00～18:00
+            受付時間：8:00～20:00
           </div>
           <Link to="/contact" className="block bg-blue-500 hover:bg-blue-600 text-white text-center py-3 rounded transition-colors">
             <Mail className="w-5 h-5 inline-block mr-2" />
