@@ -141,7 +141,7 @@ export function ContentProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useContent() {
-  const context = useContext(ContentContext);
+  const context = useContext(MainContent);
   if (!context) {
     throw new Error('useContent must be used within ContentProvider');
   }
