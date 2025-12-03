@@ -58,3 +58,6 @@
           "build": "vite build"
       }
   }
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "@supabase/supabase-js": "^2.43.2", 

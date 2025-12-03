@@ -2,22 +2,47 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Lock, User } from 'lucide-react';
+import { projectId } from '../../utils/supabase/info';
 
 export function AdminLoginPage() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
     
-    if (login(username, password)) {
+    const result = await login(email, password);
+    
+    if (result.success) {
       navigate('/admin');
     } else {
-      setError('ユーザー名またはパスワードが正しくありません');
+      setError(result.error || 'ログインに失敗しました');
+    }
+    setLoading(false);
+  };
+
+  const handleSetup = async () => {
+    if (!window.confirm('初期管理者アカウントを作成しますか？')) return;
+    try {
+      const res = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-80cda5cb/signup`, {
+        method: 'POST'
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert('管理者アカウントを作成しました。\nEmail: admin@example.com\nPass: admin123');
+        setEmail('admin@example.com');
+        setPassword('admin123');
+      } else {
+        alert('作成失敗: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('接続エラー');
     }
   };
 
@@ -40,21 +65,28 @@ export function AdminLoginPage() {
           )}
           
           <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded text-sm">
-            <p>デモ用認証情報：</p>
-            <p>ユーザー名: <strong>admin</strong></p>
-            <p>パスワード: <strong>admin123</strong></p>
+            <p>管理者アカウント情報：</p>
+            <p>Email: <strong>admin@example.com</strong></p>
+            <p>Password: <strong>admin123</strong></p>
+            <button 
+              type="button" 
+              onClick={handleSetup}
+              className="mt-2 text-xs underline text-blue-800 hover:text-blue-900"
+            >
+              ※アカウント未作成の場合はこちらをクリック
+            </button>
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-2">ユーザー名</label>
+            <label className="block text-gray-700 mb-2">メールアドレス</label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="ユーザー名を入力"
+                placeholder="admin@example.com"
                 required
               />
             </div>
@@ -77,9 +109,10 @@ export function AdminLoginPage() {
 
           <button
             type="submit"
-            className="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded transition-colors"
+            disabled={loading}
+            className="w-full bg-blue-900 hover:bg-blue-800 text-white py-3 rounded transition-colors disabled:opacity-50"
           >
-            ログイン
+            {loading ? 'ログイン中...' : 'ログイン'}
           </button>
         </form>
 
