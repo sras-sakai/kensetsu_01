@@ -140,11 +140,3 @@ export function AdminLoginPage() {
     </div>
   );
 }
-```
-
-再アップロード
-
-```powershell
-git add .
-git commit -m "ログイン画面の登録機能を修正"
-git push
