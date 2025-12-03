@@ -61,14 +61,17 @@ export function Sidebar() {
       <div className="bg-white rounded-lg shadow p-6">
         <h3 className="text-lg text-blue-900 mb-4 pb-2 border-b border-gray-300">対応エリア</h3>
         <p className="text-sm text-gray-600 mb-3">
-          以下の地域を中心に対応しております。その他の地域についてもお気軽にご相談ください。
+          以下の地域を中心に対応しております。電子申請に対応しておりますので、その他の地域についてもお気軽にご相談ください。
         </p>
         <ul className="space-y-1 text-sm text-gray-700">
-          <li>• 東京都全域</li>
-          <li>• 神奈川県</li>
-          <li>• 千葉県</li>
+          <li>• 新潟県</li>
+          <li>• 山形県</li>
+          <li>• 福島県</li>
+          <li>• 長野県</li>
+          <li>• 富山県</li>
           <li>• 埼玉県</li>
-          <li>• その他関東近郊</li>
+          <li>• 秋田県</li>
+          <li>• その他関東、東北、北信越</li>
         </ul>
       </div>
 

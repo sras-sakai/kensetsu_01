@@ -51,13 +51,13 @@ export function ContactPage() {
                   <div className="border-2 border-blue-200 rounded-lg p-6 text-center">
                     <Phone className="w-12 h-12 text-blue-500 mx-auto mb-4" />
                     <h3 className="text-xl text-blue-900 mb-3">お電話でのお問い合わせ</h3>
-                    <a href="tel:0120-000-0000" className="text-3xl text-green-600 hover:text-green-700 block mb-2">
+                    <a href="tel:025-378-2033" className="text-3xl text-green-600 hover:text-green-700 block mb-2">
                       0120-000-0000
                     </a>
                     <div className="text-sm text-gray-600 space-y-1">
                       <p className="flex items-center justify-center gap-2">
                         <Clock className="w-4 h-4" />
-                        受付時間：平日 9:00～18:00
+                        受付時間：平日 8:00～20:00
                       </p>
                       <p className="text-xs text-gray-500">土日祝日は定休日</p>
                     </div>

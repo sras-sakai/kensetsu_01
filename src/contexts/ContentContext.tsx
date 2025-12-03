@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
+import { projectId } from '../utils/supabase/info';
 
 interface NewsItem {
   id: string;
@@ -43,6 +45,7 @@ interface ContentContextType {
   updateFAQs: (faqs: FAQ[]) => void;
   updatePrices: (prices: PriceItem[]) => void;
   updateOfficeInfo: (info: OfficeInfo) => void;
+  loading: boolean;
 }
 
 const defaultContent: ContentData = {
@@ -97,7 +100,7 @@ const defaultContent: ContentData = {
     name: '建設業許可相談センター',
     representative: '行政書士 ○○ ○○',
     address: '〒100-0000\n東京都千代田区○○○ 1-2-3\n○○ビル 4F',
-    phone: '0120-000-0000',
+    phone: '025-378-2033',
     fax: '03-0000-0000',
     email: 'info@example.com',
     hours: '平日：9:00～18:00\n土日祝：定休日\n※事前予約により土日祝日の対応も可能です',
@@ -108,33 +111,60 @@ const defaultContent: ContentData = {
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
 
 export function ContentProvider({ children }: { children: React.ReactNode }) {
-  const [content, setContent] = useState<ContentData>(() => {
-    const stored = localStorage.getItem('websiteContent');
-    return stored ? JSON.parse(stored) : defaultContent;
-  });
+  const [content, setContent] = useState<ContentData>(defaultContent);
+  const [loading, setLoading] = useState(true);
+  const { token } = useAuth();
+
+  const apiUrl = `https://${projectId}.supabase.co/functions/v1/make-server-80cda5cb/content`;
 
   useEffect(() => {
-    localStorage.setItem('websiteContent', JSON.stringify(content));
-  }, [content]);
+    // サーバーからの読み込みを一時停止（デザイン調整のため）
+    setLoading(false);
+  }, [apiUrl]);
+
+  const saveContent = async (newContent: ContentData) => {
+    if (!token) return;
+
+    try {
+      await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(newContent)
+      });
+    } catch (error) {
+      console.error('Failed to save content:', error);
+    }
+  };
 
   const updateNews = (news: NewsItem[]) => {
-    setContent(prev => ({ ...prev, news }));
+    const newContent = { ...content, news };
+    setContent(newContent);
+    saveContent(newContent);
   };
 
   const updateFAQs = (faqs: FAQ[]) => {
-    setContent(prev => ({ ...prev, faqs }));
+    const newContent = { ...content, faqs };
+    setContent(newContent);
+    saveContent(newContent);
   };
 
   const updatePrices = (prices: PriceItem[]) => {
-    setContent(prev => ({ ...prev, prices }));
+    const newContent = { ...content, prices };
+    setContent(newContent);
+    saveContent(newContent);
   };
 
   const updateOfficeInfo = (info: OfficeInfo) => {
-    setContent(prev => ({ ...prev, officeInfo: info }));
+    const newContent = { ...content, officeInfo: info };
+    setContent(newContent);
+    saveContent(newContent);
   };
 
   return (
-    <ContentContext.Provider value={{ content, updateNews, updateFAQs, updatePrices, updateOfficeInfo }}>
+    <ContentContext.Provider value={{ content, updateNews, updateFAQs, updatePrices, updateOfficeInfo, loading }}>
       {children}
     </ContentContext.Provider>
   );
