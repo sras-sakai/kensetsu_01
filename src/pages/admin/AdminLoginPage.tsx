@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Lock, User } from 'lucide-react';
-import { projectId } from '../../utils/supabase/info';
+import { createClient } from '@supabase/supabase-js';
+import { projectId, publicAnonKey } from '../../utils/supabase/info';
+
+// Supabaseクライアントの初期化
+const supabase = createClient(`https://${projectId}.supabase.co`, publicAnonKey);
 
 export function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -28,21 +32,33 @@ export function AdminLoginPage() {
   };
 
   const handleSetup = async () => {
-    if (!window.confirm('初期管理者アカウントを作成しますか？')) return;
+    if (!email || !password) {
+      alert('フォームにメールアドレスとパスワードを入力してからクリックしてください。');
+      return;
+    }
+
+    if (!window.confirm(`メールアドレス: ${email}\nこの内容で管理者アカウントを新規登録しますか？`)) return;
+
     try {
-      const res = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-80cda5cb/signup`, {
-        method: 'POST'
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name: 'Admin' }
+        }
       });
-      const data = await res.json();
-      if (res.ok) {
-        alert('管理者アカウントを作成しました。\nEmail: admin@example.com\nPass: admin123');
-        setEmail('admin@example.com');
-        setPassword('admin123');
+
+      if (error) {
+        alert('作成失敗: ' + error.message);
       } else {
-        alert('作成失敗: ' + (data.error || 'Unknown error'));
+        if (data.session) {
+          alert('アカウントを作成しました！\nそのままログインボタンを押してください。');
+        } else {
+          alert('確認メールを送信しました。\nメールボックスを確認し、本文中のリンクをクリックして登録を完了させてください。\n(その後、ログインが可能になります)');
+        }
       }
     } catch (err) {
-      alert('接続エラー');
+      alert('予期せぬエラーが発生しました');
     }
   };
 
@@ -65,15 +81,14 @@ export function AdminLoginPage() {
           )}
           
           <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded text-sm">
-            <p>管理者アカウント情報：</p>
-            <p>Email: <strong>admin@example.com</strong></p>
-            <p>Password: <strong>admin123</strong></p>
+            <p className="font-bold mb-1">アカウント登録について：</p>
+            <p className="mb-2">下のフォームに登録したいメールアドレスとパスワードを入力し、以下のリンクをクリックしてください。</p>
             <button 
               type="button" 
               onClick={handleSetup}
-              className="mt-2 text-xs underline text-blue-800 hover:text-blue-900"
+              className="text-xs font-bold underline text-blue-800 hover:text-blue-900"
             >
-              ※アカウント未作成の場合はこちらをクリック
+              ※アカウント新規登録（ここをクリック）
             </button>
           </div>
 
@@ -86,7 +101,7 @@ export function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="admin@example.com"
+                placeholder="例: admin@mysite.com"
                 required
               />
             </div>
@@ -101,7 +116,7 @@ export function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="パスワードを入力"
+                placeholder="6文字以上のパスワード"
                 required
               />
             </div>
@@ -125,3 +140,11 @@ export function AdminLoginPage() {
     </div>
   );
 }
+```
+
+再アップロード
+
+```powershell
+git add .
+git commit -m "ログイン画面の登録機能を修正"
+git push
